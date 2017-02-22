@@ -186,11 +186,12 @@ var getNPMPackageIds = function () {
   return _.keys(packageManifest.dependencies) || [];
 }
 
-// CONFIG.BUNDLE_LIBS = [ 'lodash', 'jquery' ]
-var libs = [];
-libs = getNPMPackageIds().concat(libs, getBowerPackageIds());
-
-
+var getLibs = function () {
+  var libs = getNPMPackageIds().concat([], getBowerPackageIds());
+  // Remove server libs from bundle
+  libs = _.difference(libs,CONFIG.SERVER_LIBS);
+  return libs;
+}
 
 ///////////////////    START CLIENT PROCESS   ///////////////////////
 
@@ -198,9 +199,6 @@ libs = getNPMPackageIds().concat(libs, getBowerPackageIds());
 gulp.task('bundler', ['bundle:libs'], function() {
   console.log(green('#[+] Libs bundled...'));
 })
-
-// Start server once
-console.log(green('[+] Dev server listening on ' + CONFIG.REFRESH_PORT))
 
 createController = function(options, cb) {
   var controllers_file = path.join(CONFIG.PATH_CLIENT,'angular/app.controllers.coffee')
@@ -383,9 +381,9 @@ io.sockets.on('connection', function(socket) {
 });
 
 
-// gulp.task('clean', function() {
-//   return del(['build']);
-// });
+gulp.task('clean', function() {
+  return del(['build']);
+});
 
 gulp.task('compress:images', function() {
   return gulp.src(globs.images)
@@ -443,6 +441,7 @@ gulp.task('compile:styles', function() {
 })
 
 gulp.task('compile:scripts', function() {
+  var libs = getLibs();
 
   var b = browserify({
     entries: [path.join(CONFIG.PATH_CLIENT, "main.coffee")],
@@ -467,9 +466,10 @@ gulp.task('compile:scripts', function() {
 })
 
 gulp.task('bundle:libs', function() {
+  var libs = getLibs();
+
   var b = browserify({
     fullPaths: !production,
-    // generate source maps in non-production environment
     debug: !production
   });
 
@@ -549,6 +549,8 @@ gulp.task('compile:server', function(){
 
 // Refresher Server Tasks
 gulp.task('watch:server', function() {
+  // Start server once
+  console.log(green('[+] Dev server listening on ' + CONFIG.REFRESH_PORT))
   return nodemon({
     script: path.join(CONFIG.APP_BUILD_SERVER, 'server.js'),
     watch: [CONFIG.PATH_SERVER],
