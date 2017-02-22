@@ -1,0 +1,83 @@
+.Chat { 
+	h1 {
+		color: $blue;
+		margin-bottom: 0;
+		padding-bottom: 0;
+	}
+	h4 {
+		font-size: 1em;
+		font-weight: bold;
+		padding-bottom: $base-spacing/2;
+		border-bottom: 1px solid $light-gray;
+	}
+	.users {
+		margin-top: $base-spacing/2;
+		background-color: lighten($light-gray, 10%);
+		list-style: none;
+		@include border-radius($border-radius);
+		max-height: 450px;
+		overflow: auto;
+
+		li:before {
+			content: none;
+		}
+		li {
+			padding-left: $base-spacing;
+		}
+	}
+	.messages{
+		margin-top: $base-spacing*2;
+		display: block;
+		min-height: 200px;
+		box-shadow: inset 2px 2px 20px 0px $light-gray;
+		@include border-radius($border-radius*2);
+		padding: $base-spacing;
+		max-height: 400px;
+		overflow: auto;
+		.message {
+			padding: $base-spacing/2 $base-spacing;
+			@include border-radius($border-radius);
+			min-height: $base-spacing*2;
+			width: 80%;
+			text-align: justify;
+			margin: $base-spacing auto;
+			position: relative;
+			&.system {
+				margin: $base-spacing/2 auto;
+				min-height: auto;
+				background-color: lighten($yellow,30%);
+				text-align: center;
+				padding: 0;
+				font-weight: bold;
+				font-size: 0.9em;
+				.author {
+					display: none;
+				}
+			}
+			&.myself {
+				margin-left: 15%;
+				background-color: lighten($green,30%);
+				text-align: right;
+				.author {
+					display: none;
+				}
+			}
+			&.other {
+				margin-right: 20%;
+				background-color: lighten($blue,30%);
+				.author {
+					position: absolute;
+					bottom: $base-spacing/4;
+					right: $base-spacing/2;
+					font-size: 0.85em;
+					font-style: italic;
+				}
+			}
+		}
+	}
+	textarea {
+		width: 100%;
+		resize: none;
+		@include border-radius($border-radius);
+	}
+}

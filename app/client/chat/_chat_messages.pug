@@ -1,0 +1,5 @@
+.message(ng-repeat="infos in messages.messages track by $index" ng-class="messages.getClass(infos.author)")
+    .content {{infos.msg}}
+    .author(ng-show="infos.author != (chat.name || 'system')")
+        i.fa.fa-user
+        | {{infos.author}}

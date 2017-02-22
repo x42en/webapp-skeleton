@@ -1,0 +1,23 @@
+.container.Chat
+    .row
+        .col-12.center
+            h1 Welcome {{chat.name}} !!
+    .row
+        .col-3
+            h4
+                i.fa.fa-users
+                | Connected users
+            ul.users
+                div(ui-view="users")
+        .col-9
+            .messages
+                .message.system ..:: welcome ::..
+                div(ui-view="messages")
+    .row
+        .col-3
+        .col-7.center
+            textarea(name="input-msg" ng-model="chat.msg" ng-keyup="$event.keyCode == 13 && chat.send()" placeholder="Type your message here..." autofocus)
+        .col-2
+            button.button.teal(name='send' ng-click="chat.send()")
+                i.fa.fa-envelope-o
+                | Send

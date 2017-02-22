@@ -1,0 +1,25 @@
+.container.Login
+    .row
+        .col-12.center
+            h1
+                i.fa.fa-rocket.red
+                | App login
+    .row
+        .col-3
+        .col-6.center
+            h4 Please enter you username
+    .row
+        .col-3
+        .col-6.center
+            input(type="text" name="username" ng-model="login.username" placeholder="Username" autocomplete="off" ng-keyup="$event.keyCode == 13 && login.auth()" autofocus)
+    .row
+        .col-3
+        .col-6.center
+            button.button.black(name='login' ng-click="login.auth()")
+                i.fa.fa-sign-in
+                | Enter
+
+    .login-message(ng-show="login.message")
+        .msgbox(ng-class="login.type")
+            i.fa(ng-class="login.getIcon()")
+            | {{login.message}}

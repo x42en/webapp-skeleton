@@ -1,0 +1,66 @@
+.dev-tools(ng-controller="DevCtrl as dev")
+    #dev.toolbox(dnd-draggable='true')
+        .title
+            i.fa.fa-cogs.control(ng-click="dev.show = !dev.show")
+            span(ng-show="dev.show") Create element
+        .config(ng-show="dev.show")
+            .section
+                i.fa.fa-desktop
+                | Client
+            ul.tools
+                li(ng-click="dev.setType('controller')")
+                    i.fa.fa-question-circle.blue.right(tooltips tooltip-template="Create a single controller" tooltip-side="right")
+                    | controller
+                li(ng-click="dev.setType('template')")
+                    i.fa.fa-question-circle.blue.right(tooltips tooltip-template="A template is simply JADE & SASS files" tooltip-side="right")
+                    | template
+                li(ng-click="dev.setType('component')")
+                    i.fa.fa-question-circle.blue.right(tooltips tooltip-template="A component is<br/>- a template (JADE+SASS)<br/>- its corresponding controller" tooltip-side="right")
+                    | component
+                li(ng-click="dev.setType('view')")
+                    i.fa.fa-question-circle.blue.right(tooltips tooltip-template="A view is<br/>- a template (JADE+SASS)<br/>- its corresponding controller<br/>- a named view associated to a state in ui-router" tooltip-side="right")
+                    | view
+                li(ng-click="dev.setType('page')")
+                    i.fa.fa-question-circle.blue.right(tooltips tooltip-template="A page is<br/>- a template (JADE+SASS)<br/>- its corresponding controller<br/>- a state in ui-router." tooltip-side="right")
+                    | page
+            .section
+                i.fa.fa-database
+                | Server
+            ul.tools
+                li(ng-click="dev.setType('service')")
+                    | service
+            .details(ng-show="dev.infos")
+                h4
+                    i.fa.fa-info-circle
+                    | {{dev.infos}} configuration
+                .field(ng-show="dev.infos == 'view'")
+                    select(name="states" ng-model="dev.state")
+                        option(value="" disabled selected) Select a parent page
+                        option(ng-repeat="s in dev.states" value="{{s}}") {{s}}
+                .field
+                    input(type="text" name="name" placeholder="{{dev.infos}} name" ng-change="dev.setName()" ng-model="dev.name")
+                .field
+                    input(type="text" name="slug" placeholder="Url format" ng-show="dev.infos == 'page'" ng-model="dev.slug")
+                
+                h5
+                    i.fa.fa-sliders
+                    | Options
+                .field
+                    input(type="checkbox" name="authentified" ng-model="dev.authentified" ng-click="dev.authentified = !dev.authentified" ng-show="dev.infos == 'page'")
+                    label(ng-show="dev.infos == 'page'") Access restricted
+                .field
+                    input(type="checkbox" name="controller" ng-model="dev.controller" ng-show="dev.infos != 'controller' && dev.infos != 'template'")
+                    label(ng-show="dev.infos != 'controller' && dev.infos != 'template'") Add a Controller
+                .field
+                    input(type="text" name="controller" placeholder="Controller name" ng-show="dev.controller && dev.infos != 'controller'" ng-model="dev.cname")
+                .field
+                    input(type="text" name="alias" placeholder="Controller alias" ng-show="dev.controller || dev.infos == 'controller'" ng-model="dev.calias")
+
+                
+                button.button.blue.right(name="create" ng-click="dev.create()")
+                    i.fa.fa-save
+                    | Create
+    .dev-message(ng-show="dev.message")
+        .msgbox(ng-class="dev.type")
+            i.fa(ng-class="dev.getIcon()")
+            | Dev {{dev.type}}: {{dev.message}}

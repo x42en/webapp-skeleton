@@ -1,0 +1,50 @@
+include class/init.php
+
+mixin styles(style_url)
+  link(href=`${style_url}` rel="stylesheet" type="text/css")
+    
+mixin scripts(script_url)
+  script(src=`${script_url}` type="text/javascript" )
+
+mixin favicon(icon_url)
+  link(rel="icon" type="image/png" href=`${icon_url}`)
+  link(rel="apple-touch-icon" href=`${icon_url}`)
+  link(rel="shortcut icon", type="image/png", href=`${icon_url}`)
+
+doctype html
+html(lang="en", ng-app='webapp')
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='Content-Type' content='text/html; charset=UTF-8')
+    meta(http-equiv='X-UA-Compatible' content='IE=edge')
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    meta(name="viewport" content='width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0')
+    meta(name='description' content=`${APP_DESCRIPTION}`)
+    meta(meta name='robots' content="noindex")
+    base(href='/')
+    
+    +favicon("/assets/favicon.png")
+
+    title= APP_TITLE
+    
+    //- Multiple css inclusion
+    each site_css in APP_STYLES
+      +styles(`/styles/${site_css}`)
+
+  body
+    //- Menu template
+    include menu/_menu
+    
+    //- Conditional view
+    ui-view
+
+    //- Footer template
+    include footer/_footer
+
+    //- Multiple scripts inclusion
+    each script_url in APP_SCRIPTS
+      +scripts(`/scripts/${script_url}`)
+
+    if process.env.NODE_ENV !== 'production'
+      include dev/_dev
+      

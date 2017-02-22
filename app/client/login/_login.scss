@@ -1,0 +1,10 @@
+.Login {
+    input {
+        display: block;
+        width: 80%;
+        margin: $base-spacing auto;
+    }
+    .login-message {
+        @include notification();
+    }
+}

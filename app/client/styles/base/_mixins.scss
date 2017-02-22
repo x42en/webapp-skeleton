@@ -1,0 +1,71 @@
+// mixins
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+          border-radius: $radius;
+}
+
+@mixin pointer() {
+  cursor: hand;
+  cursor: pointer;
+}
+
+@mixin button($color,$font-color: #FFF) {
+  @pointer();
+  display: inline-block;
+  min-height: $base-spacing;
+  outline: 0;
+  border: none;
+  vertical-align: baseline;
+  background: $color;
+  color: $font-color;
+  font-family: $font-family;
+  margin: 0 $base-spacing/4 0 0;
+  padding: $base-spacing/2 $base-spacing;
+  text-transform: none;
+  text-shadow: none;
+  font-weight: $font-weight-heavy;
+  line-height: $base-spacing;
+  font-style: normal;
+  text-align: center;
+  text-decoration: none;
+  border-radius: $border-radius;
+  i.fa{
+    color: $font-color;
+  }
+}
+
+@mixin absolute-center() {
+  position: absolute;
+  right: 0;
+  left: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@mixin notification() {
+  @include absolute-center();
+  bottom: $base-spacing*10;
+  text-align: center;
+  @media only screen and (max-height: 768px) {
+    position: fixed;
+    max-width: 95%;
+    bottom: $base-spacing*2;
+  }
+  .msgbox {
+    display: inline-block;
+    padding: $base-spacing/2 $base-spacing;
+    color: $white;
+    font-weight: bold;
+    @include border-radius($border-radius*2);
+    
+    &.success { background-color: lighten($green,10%); }
+    &.notification { background-color: lighten($blue,10%); }
+    &.warning { background-color: lighten($yellow,10%); }
+    &.error { background-color: lighten($red,10%); }
+
+    i.fa{ color: $white; }
+  }
+}

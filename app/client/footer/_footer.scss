@@ -1,0 +1,50 @@
+.footer{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    background-color: $black;
+    padding-top: $base-spacing;
+    @media only screen and (max-height: 450px) {
+        position: relative;
+    }
+    i.fa {
+        color: $white;
+        width: 1em;
+    }
+    .socials, .papers {
+        margin-bottom: $base-spacing;
+        padding-left: $base-spacing;
+        list-style: none;
+        li {
+            margin-bottom: $base-spacing/3;
+        }
+        a {
+            font-size: 0.9em;
+            font-weight: lighter;
+            color: $white;
+            text-decoration: none;
+            &:hover {
+                color: lighten($blue, 15%);
+            }
+        }
+    }
+    .infos {
+        color: $white;
+        margin-left: $base-spacing*4;
+        .name, .address, .city{
+            color: $white;
+            margin-top: $base-spacing/2;
+            font-size: 0.8em;
+        }
+    }
+    .contrib {
+        color: $white;
+        font-size: 0.8em;
+        font-style: italic;
+        padding-bottom: $base-spacing/2;
+        i.fa{
+            color: $pink;
+        }
+    }
+}

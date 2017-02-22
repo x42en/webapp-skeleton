@@ -1,0 +1,18 @@
+.container.menu
+  nav(ng-controller="MenuCtrl as menu")
+    .row
+      a.col-2.entry(ui-sref="init" ui-sref-active="active")
+        i.fa.fa-home
+        | Home
+      a.col-2.entry(ui-sref='chat' ui-sref-active="active")
+        i.fa.fa-comments
+        | App
+      .col-2
+      .col-2
+      .col-2
+        a.entry(ng-show="menu.chatService.username" ng-click="menu.logout()")
+          i.fa.fa-power-off.red
+          | Logout
+      a.col-2.entry(ui-sref='about' ui-sref-active="active")
+        i.fa.fa-info-circle
+        | About
