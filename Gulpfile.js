@@ -14,7 +14,7 @@ const gulp     = require('gulp')
 , fs           = require('fs')
 , mkdirp       = require('mkdirp')
 , gutil        = require('gulp-util')
-, nodemon      = require('gulp-nodemon')
+, server       = require('gulp-develop-server')
 , sass         = require('gulp-sass')
 , less         = require('gulp-less')
 , jade         = require('gulp-pug')
@@ -547,22 +547,16 @@ gulp.task('compile:server', function(){
     .pipe(gulp.dest(CONFIG.APP_BUILD_SERVER))
 })
 
-// Refresher Server Tasks
+// run server 
+gulp.task('start:server', ['compile:server'], function() {
+  console.log(blue('[+] Starting server'))
+  server.listen( { path: path.join(CONFIG.APP_BUILD_SERVER, 'server.js') } );
+});
+
+// restart server if app.js changed 
 gulp.task('watch:server', function() {
-  // Start server once
-  console.log(green('[+] Dev server listening on ' + CONFIG.REFRESH_PORT))
-  return nodemon({
-    script: path.join(CONFIG.APP_BUILD_SERVER, 'server.js'),
-    watch: [CONFIG.PATH_SERVER],
-    ext: 'coffee'
-  })
-  .on('restart', function(){
-    // Nodemon tasks declaration throw error...
-    // prevent it by manually call task
-    gulp.task('compile:server');
-    console.log(yellow('[!] restart server...'));
-  })
-})
+  gulp.watch( globs.server, ['compile:server', server.restart] );
+});
 
 ////////////////////  END OF SERVER PROCESS  /////////////////////////
 
@@ -571,7 +565,7 @@ gulp.task('watch:server', function() {
 // Default task, launch it with '#> gulp'
 gulp.task('default',['watch:client','watch:server'], function() {
   gulp.start([
-    'compile:server',
+    'start:server',
     'compress:images',
     'copy:php',
     'copy:assets',
