@@ -1,0 +1,18 @@
+.container.Home
+    .row
+        .col-12
+            h1.center
+                i.fa.fa-check-circle.green
+                | My webapp
+    .row
+        .col-6
+            h3 A simple block:
+            .pug-results
+                p.blue You are amazing !!
+        .col-6
+            h3 Controller usage:
+            ul.angular-results
+                li {{home.field}}
+                li {{home.method()}}
+                li {{home.methodWithParam('param1')}}
+                li {{home.accessFieldFromMethod()}}

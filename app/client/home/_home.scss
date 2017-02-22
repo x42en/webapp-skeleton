@@ -1,0 +1,29 @@
+.Home {    
+    .fade {
+        /* start 'enter' transition */
+        &.ng-enter {
+            animation: fadeIn 0.5s;
+        }
+    }
+
+    h3 {
+        margin-bottom: $base-spacing;
+        border-bottom: 1px solid $gray;
+    }
+
+    [class$="-results"] {
+        text-align: justify;
+    }
+
+    ul {
+        list-style: none; /* Remove list bullets */
+        padding: 0;
+        margin: 0;
+
+        li:before {
+            content: "•"; /* Insert content that looks like bullets */
+            padding-right: 8px;
+            color: $blue; /* Or a color you prefer */
+        }
+    }
+}
