@@ -76,6 +76,7 @@
     "angular-touch": "^1.6.2",
     "angular-ui-router": "^0.4.2",
     "ioserver": "^0.1.9",
+    "lodash": "^4.17.4",
     "socket.io-client": "^1.4.8"
   }
 }
