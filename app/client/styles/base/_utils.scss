@@ -148,6 +148,10 @@ button, input, select {
   @include pointer();
 }
 
+.warning {
+  @include button($red, $black);
+}
+
 i.fa{
   margin-right: $base-spacing/2;
 }

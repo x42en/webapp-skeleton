@@ -57,18 +57,4 @@ angular.module('webapp').config (@$stateProvider, @$urlRouterProvider, @$locatio
                     controllerAs: 'messages'
                 # <%End chat views%>
         
-        .state 'test',
-            url: '/test'
-            data: { requireLogin: false }
-            views:
-                '':
-                    templateUrl: 'pages/_test.php'
-                    controller: 'TestCtrl'
-                    controllerAs: 'test'
-                'hello@test':
-                    templateUrl: 'pages/_hello.php'
-                    controller: 'HelloCtrl'
-                    controllerAs: 'hello'
-                # <%End test views%>
-
         # <%End routes%>

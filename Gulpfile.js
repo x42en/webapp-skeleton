@@ -521,6 +521,14 @@ gulp.task('compile:jade_templates', ['compile:jade_index'], function(){
 
 // Refresher Client Tasks
 gulp.task('watch:client', function(){
+  // watch(globs.images).pipe('compress:images')
+  // watch(globs.php).pipe('copy:php')
+  // watch(globs.assets).pipe('copy:assets')
+  // watch(globs.styles).pipe('compile:styles')
+  // watch(globs.coffee).pipe('compile:scripts')
+  // watch(globs.jade_index).pipe('compile:jade_index')
+  // watch(globs.jade_client).pipe('compress:jade_templates')
+
   gulp.watch(globs.images, ['compress:images'])
   gulp.watch(globs.php, ['copy:php'])
   gulp.watch(globs.assets, ['copy:assets'])
