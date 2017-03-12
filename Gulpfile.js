@@ -316,9 +316,33 @@ createView = function(options) {
     io.emit('success', 'View', options.name);
   })
 }
+
+createServerClass = function(options, cb){
+  var class_content = "module.exports = class " + options.name + "\n";
+  class_content += "    constructor: () ->\n";
+  class_content += "        console.log \"" + options.name + " service loaded !\"\n";
+
+  return fs.writeFile(path.join(CONFIG.PATH_SERVER, options.name + ".coffee"), class_content, function(err){
+    if(err) io.emit(CONFIG.ERROR_EVT, err);
+    else io.emit('success', 'Class', options.name);
+    if(_.isFunction(cb)) cb();
+  })
+}
+
 createService = function(options) {
   console.log(blue('[+] Create service ' + options.name));
-  return true;
+  return createServerClass(options, function () {
+    var server_file = path.join(CONFIG.PATH_SERVER,'server.coffee');
+    var service_content = "app.addService\n";
+    service_content += "    name: '" + options.alias + "'\n";
+    service_content += "    service: " + options.name + "\n\n";
+    service_content += "# <%End services%>";
+
+    gulp.src([server_file])
+      .pipe(replace('# <%End services%>',service_content))
+      .pipe(gulp.dest(CONFIG.PATH_SERVER));
+    io.emit('success', 'Service', options.name);
+  })
 }
 
 getInfos = function() {
@@ -584,6 +608,7 @@ gulp.task('default',['watch:client','watch:server'], function() {
     ], function () {
       if(FIRSTIME){  
         console.log(green("[+] Start task finished"));
+        console.log(green("[+] Check http://" + CONFIG.APP_URL + "/"));
         ON_ERROR = false;
         FIRSTIME = false;
         io.emit('success',"Gulp ready...");

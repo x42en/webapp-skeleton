@@ -28,6 +28,7 @@
                 | Server
             ul.tools
                 li(ng-click="dev.setType('service')")
+                    i.fa.fa-question-circle.blue.right(tooltips tooltip-template="A page is<br/>- a service is operating on server side, and can be interacted with socket.io channels." tooltip-side="right")
                     | service
             .details(ng-show="dev.infos")
                 h4
@@ -46,15 +47,17 @@
                     i.fa.fa-sliders
                     | Options
                 .field
-                    input(type="checkbox" name="authentified" ng-model="dev.authentified" ng-click="dev.authentified = !dev.authentified" ng-show="dev.infos == 'page'")
+                    input(type="checkbox" name="authentified" ng-model="dev.authentified" ng-show="dev.infos == 'page'")
                     label(ng-show="dev.infos == 'page'") Access restricted
                 .field
-                    input(type="checkbox" name="controller" ng-model="dev.controller" ng-show="dev.infos != 'controller' && dev.infos != 'template'")
-                    label(ng-show="dev.infos != 'controller' && dev.infos != 'template'") Add a Controller
+                    input(type="checkbox" name="controller" ng-model="dev.controller" ng-show="dev.showController()")
+                    label(ng-show="dev.showController()") Add a Controller
                 .field
                     input(type="text" name="controller" placeholder="Controller name" ng-show="dev.controller && dev.infos != 'controller'" ng-model="dev.cname")
                 .field
-                    input(type="text" name="alias" placeholder="Controller alias" ng-show="dev.controller || dev.infos == 'controller'" ng-model="dev.calias")
+                    input(type="text" name="calias" placeholder="Controller alias" ng-show="dev.controller || dev.infos == 'controller'" ng-model="dev.calias")
+                .field
+                    input(type="text" name="salias" placeholder="Service alias" ng-show="dev.infos == 'service'" ng-model="dev.salias")
 
                 
                 button.button.blue.right(name="create" ng-click="dev.create()")

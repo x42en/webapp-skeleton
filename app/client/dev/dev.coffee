@@ -10,10 +10,11 @@ class DevCtrl
     name = undefined
     cname = undefined
     calias = undefined
+    salias = undefined
     slug = undefined
     state = undefined
     view = undefined
-
+    
     constructor: ($scope, @devSocket, @$timeout, _) ->
         console.log "[+] Dev controller loaded !"
         @authentified = false
@@ -51,6 +52,9 @@ class DevCtrl
             @message = 'server disconnected...'
             @type = 'error'
             console.log "[!] #{@message}"
+
+    showController: () ->
+        return (@infos in ['page', 'view', 'component'])
 
     setType: (@infos) ->
         @controller = if @infos in ['controller','page','view','component'] then true else false
@@ -106,14 +110,20 @@ class DevCtrl
 
         options = {}
         options.name = @name[0].toUpperCase() + @name.substring(1).toLowerCase()
-        options.authentified = @authentified.toString()
-        options.state = if @state then @state.toLowerCase() else ''
-        
-        if @controller
-            options.controller = if @cname then @cname else options.name
-            options.alias = if @calias then @calias else options.controller.toLowerCase()
-        
-        options.slug = if @slug then @slug else @name
+        # If we build server side
+        if @infos is 'service'
+            options.alias = if @salias then @salias else options.name.toLowerCase()
+        # On client side
+        else
+            options.authentified = @authentified.toString()
+            options.state = if @state then @state.toLowerCase() else ''
+            
+            if @controller
+                options.controller = if @cname then @cname else options.name
+                options.alias = if @calias then @calias else options.controller.toLowerCase()
+            
+
+            options.slug = if @slug then @slug else @name
 
         @devSocket.emit @infos, options
         

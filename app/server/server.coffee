@@ -8,7 +8,7 @@ app.addService
     name: 'chat'
     service: Chat
 
-# <%End service%>
+# <%End services%>
 
 console.log '#[+] App started :)'
 app.start()
