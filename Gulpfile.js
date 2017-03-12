@@ -520,7 +520,7 @@ gulp.task('bundle:libs', function() {
 
 });
 
-gulp.task('compile:jade_index', function(){
+gulp.task('compile:jade_index', ['compile:jade_templates'], function(){
   var stream =  gulp.src(globs.jade_index)
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(data(function(file){
@@ -533,33 +533,38 @@ gulp.task('compile:jade_index', function(){
     .on('end',refreshBrowser);
 })
 
-gulp.task('compile:jade_templates', ['compile:jade_index'], function(){
+gulp.task('compile:jade_templates', function(){
   return gulp.src(globs.jade_client)
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(jade({pretty: !production}).on('error', errorHandler))
     .pipe(rename({dirname: '',extname: '.php'}))
     .pipe(gulpif(production, htmlify()))
     .pipe(gulp.dest(path.join(CONFIG.APP_BUILD_CLIENT, 'pages/')))
-    .on('end',refreshBrowser);
 })
 
 // Refresher Client Tasks
 gulp.task('watch:client', function(){
-  // watch(globs.images).pipe('compress:images')
-  // watch(globs.php).pipe('copy:php')
-  // watch(globs.assets).pipe('copy:assets')
-  // watch(globs.styles).pipe('compile:styles')
-  // watch(globs.coffee).pipe('compile:scripts')
-  // watch(globs.jade_index).pipe('compile:jade_index')
-  // watch(globs.jade_client).pipe('compress:jade_templates')
-
-  gulp.watch(globs.images, ['compress:images'])
-  gulp.watch(globs.php, ['copy:php'])
-  gulp.watch(globs.assets, ['copy:assets'])
-  gulp.watch(globs.styles, ['compile:styles'])
-  gulp.watch(globs.coffee, ['compile:scripts'])
-  gulp.watch(globs.jade_index, ['compile:jade_index'])
-  gulp.watch(globs.jade_client, ['compile:jade_templates'])
+  watch(globs.images, function(){
+    gulp.start('compress:images')
+  });
+  watch(globs.php, function(){
+    gulp.start('copy:php')
+  });
+  watch(globs.assets, function(){
+    gulp.start('copy:assets')
+  });
+  watch(globs.styles, function(){
+    gulp.start('compile:styles')
+  });
+  watch(globs.coffee, function(){
+    gulp.start('compile:scripts')
+  });
+  watch(globs.jade_index, function(){
+    gulp.start('compile:jade_index')
+  });
+  watch(globs.jade_client, function(){
+    gulp.start('compile:jade_index')
+  });
 });
 
 ////////////////////  END OF CLIENT PROCESS  /////////////////////////
@@ -604,7 +609,7 @@ gulp.task('default',['watch:client','watch:server'], function() {
     'bundle:libs',
     'compile:styles',
     'compile:scripts',
-    'compile:jade_templates'
+    'compile:jade_index'
     ], function () {
       if(FIRSTIME){  
         console.log(green("[+] Start task finished"));
