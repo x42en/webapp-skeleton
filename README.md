@@ -1,3 +1,3 @@
-# Website-Skeleton
+# Webapp-Skeleton
 
-This repository contains the basic structure used by [Website-Creator](https://github.com/x42en/website-creator). 
+This repository contains the basic structure used by [NAWAC](https://github.com/x42en/webapp-creator). 
