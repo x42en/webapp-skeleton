@@ -14,6 +14,7 @@ const gulp     = require('gulp')
 , fs           = require('fs')
 , mkdirp       = require('mkdirp')
 , gutil        = require('gulp-util')
+, del          = require('del')
 , server       = require('gulp-develop-server')
 , sass         = require('gulp-sass')
 , less         = require('gulp-less')
@@ -65,7 +66,7 @@ var FIRSTIME   = true
 // production = true;
 
 // Configure local vars
-globs.images      = [path.join(CONFIG.PATH_CLIENT, "assets/**/*.{png,jpg,jpeg,gif}")]
+globs.images      = [path.join(CONFIG.PATH_CLIENT, "assets/**/*.{png,jpg,jpeg,gif,svg}")]
 globs.php         = [path.join(CONFIG.PATH_CLIENT, "class/**/*.{php,php3,php5}")]
 globs.assets      = [path.join(CONFIG.PATH_CLIENT, "**/*.*"), '!' + path.join(CONFIG.PATH_CLIENT, "**/*.{png,jpg,jpeg,gif,svg,php,php3,php5,css,scss,sass,less,styl,stylus,coffee,js,html,pug,jade}")]
 
@@ -191,6 +192,7 @@ var getLibs = function () {
   libs = _.difference(libs,CONFIG.SERVER_LIBS);
   return libs;
 }
+
 
 ///////////////////    START CLIENT PROCESS   ///////////////////////
 
@@ -403,16 +405,16 @@ io.sockets.on('connection', function(socket) {
 
 });
 
-
+// Sanitize build dir by cleaning it... :D
 gulp.task('clean', function() {
-  return del(['build']);
+  return del([path.join(CONFIG.APP_BUILD_CLIENT), path.join(CONFIG.APP_BUILD_SERVER)]);
 });
 
 gulp.task('compress:images', function() {
   return gulp.src(globs.images)
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(imagemin())
-    .pipe(gulp.dest(path.join(CONFIG.APP_BUILD_CLIENT)))
+    .pipe(gulp.dest(path.join(CONFIG.APP_BUILD_CLIENT, 'assets/')))
     .on('end',refreshBrowser);
 })
 
@@ -541,8 +543,22 @@ gulp.task('compile:jade_templates', function(){
     .pipe(gulp.dest(path.join(CONFIG.APP_BUILD_CLIENT, 'pages/')))
 })
 
+// Create single task for all client actions
+gulp.task('compile:client', function() {
+  gulp.start([
+    'compress:images',
+    'copy:php',
+    'copy:assets',
+    'bundle:libs',
+    'compile:styles',
+    'compile:scripts',
+    'compile:jade_index',
+    'watch:client'
+    ])
+})
+
 // Refresher Client Tasks
-gulp.task('watch:client', function(){
+gulp.task('watch:client', ['compile:client'], function(){
   watch(globs.images, function(){
     gulp.start('compress:images')
   });
@@ -584,31 +600,29 @@ gulp.task('compile:server', function(){
 })
 
 // run server 
-gulp.task('start:server', ['compile:server'], function() {
+gulp.task('start:server', ['watch:server'], function() {
   console.log(blue('[+] Starting server'))
   server.listen( { path: path.join(CONFIG.APP_BUILD_SERVER, 'server.js') } );
 });
 
 // restart server if app.js changed 
-gulp.task('watch:server', function() {
+gulp.task('watch:server', ['compile:server'], function() {
   gulp.watch( globs.server, ['compile:server', server.restart] );
 });
 
 ////////////////////  END OF SERVER PROCESS  /////////////////////////
 
+// run client 
+gulp.task('start:client', ['watch:client'], function() {
+  console.log(blue('[+] Starting client'))
+});
 
 
 // Default task, launch it with '#> gulp'
-gulp.task('default',['watch:client','watch:server'], function() {
+gulp.task('default', ['clean'], function() {
   gulp.start([
-    'start:server',
-    'compress:images',
-    'copy:php',
-    'copy:assets',
-    'bundle:libs',
-    'compile:styles',
-    'compile:scripts',
-    'compile:jade_index'
+    'start:client',
+    'start:server'
     ], function () {
       if(FIRSTIME){  
         console.log(green("[+] Start task finished"));
