@@ -541,7 +541,7 @@ gulp.task('compile:jade_templates', function(){
     .pipe(jade({pretty: !production}).on('error', errorHandler))
     .pipe(rename({dirname: '',extname: '.php'}))
     .pipe(gulpif(production, htmlify()))
-    .pipe(gulp.dest(path.join(CONFIG.APP_BUILD_CLIENT, 'pages/')))
+    .pipe(gulp.dest(path.join(CONFIG.APP_BUILD_CLIENT, 'pages/')));
 })
 
 // Create single task for all client actions
@@ -555,31 +555,28 @@ gulp.task('compile:client', function() {
     'compile:scripts',
     'compile:jade_index',
     'watch:client'
-    ])
+    ]);
 })
 
 // Refresher Client Tasks
 gulp.task('watch:client', ['compile:client'], function(){
   watch(globs.images, function(){
-    gulp.start('compress:images')
+    gulp.start('compress:images');
   });
   watch(globs.php, function(){
-    gulp.start('copy:php')
+    gulp.start('copy:php');
   });
   watch(globs.assets, function(){
-    gulp.start('copy:assets')
+    gulp.start('copy:assets');
   });
   watch(globs.styles, function(){
-    gulp.start('compile:styles')
+    gulp.start('compile:styles');
   });
   watch(globs.coffee, function(){
-    gulp.start('compile:scripts')
+    gulp.start('compile:scripts');
   });
-  watch(globs.jade_index, function(){
-    gulp.start('compile:jade_index')
-  });
-  watch(globs.jade_client, function(){
-    gulp.start('compile:jade_index')
+  watch(globs.jade_index.concat(globs.jade_client), function(){
+    gulp.start('compile:jade_index');
   });
 });
 
@@ -592,7 +589,7 @@ gulp.task('watch:client', ['compile:client'], function(){
 gulp.task('copy:data', function() {
   return gulp.src(globs.server_data)
     .pipe(plumber({ errorHandler: errorHandler }))
-    .pipe(gulp.dest(CONFIG.APP_BUILD_SERVER))
+    .pipe(gulp.dest(CONFIG.APP_BUILD_SERVER));
 })
 
 gulp.task('compile:server', ['copy:data'], function(){
@@ -603,19 +600,19 @@ gulp.task('compile:server', ['copy:data'], function(){
     .pipe(concat('server.js'))
     .pipe(gulpif(production, buffer()))
     .pipe(gulpif(production, uglify()))
-    .pipe(gulp.dest(CONFIG.APP_BUILD_SERVER))
+    .pipe(gulp.dest(CONFIG.APP_BUILD_SERVER));
 })
 
 // run server 
 gulp.task('start:server', ['watch:server'], function() {
-  console.log(blue('[+] Starting server'))
+  console.log(blue('[+] Starting server'));
   server.listen( { path: path.join(CONFIG.APP_BUILD_SERVER, 'server.js') } );
 });
 
 // restart server if app.js changed 
 gulp.task('watch:server', ['compile:server'], function() {
   watch( globs.server.concat(globs.server_data), function(){
-    gulp.start('compile:server')
+    gulp.start('compile:server');
     server.restart();
     refreshBrowser();
   });
@@ -625,7 +622,7 @@ gulp.task('watch:server', ['compile:server'], function() {
 
 // run client 
 gulp.task('start:client', ['watch:client'], function() {
-  console.log(blue('[+] Starting client'))
+  console.log(blue('[+] Starting client'));
 });
 
 
