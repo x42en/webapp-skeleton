@@ -614,7 +614,11 @@ gulp.task('start:server', ['watch:server'], function() {
 
 // restart server if app.js changed 
 gulp.task('watch:server', ['compile:server'], function() {
-  gulp.watch( globs.server, ['compile:server', server.restart] );
+  watch( globs.server.concat(globs.server_data), function(){
+    gulp.start('compile:server')
+    server.restart();
+    refreshBrowser();
+  });
 });
 
 ////////////////////  END OF SERVER PROCESS  /////////////////////////
