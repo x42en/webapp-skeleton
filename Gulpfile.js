@@ -85,6 +85,7 @@ globs.jade_index  = [path.join(CONFIG.PATH_CLIENT, "index.{html,jade,pug}")]
 globs.jade_client = [path.join(CONFIG.PATH_CLIENT, "**/_*.{html,jade,pug}")]
 
 globs.server      = [path.join(CONFIG.PATH_SERVER, "**/*.coffee")]
+globs.server_data = [path.join(CONFIG.PATH_SERVER, "**/*.*"), '!' + path.join(CONFIG.PATH_SERVER, "**/*.{coffee,js}")]
 
 // Pretty Error customisation (see https://github.com/AriaMinaei/pretty-error)
 pe.appendStyle({
@@ -588,7 +589,13 @@ gulp.task('watch:client', ['compile:client'], function(){
 
 ///////////////////    SERVER PROCESS   /////////////////////////////
 
-gulp.task('compile:server', function(){
+gulp.task('copy:data', function() {
+  return gulp.src(globs.server_data)
+    .pipe(plumber({ errorHandler: errorHandler }))
+    .pipe(gulp.dest(CONFIG.APP_BUILD_SERVER))
+})
+
+gulp.task('compile:server', ['copy:data'], function(){
   console.log(blue('[+] Server compile'))
   return gulp.src(globs.server)
     .pipe(plumber({ errorHandler: errorHandler }))
