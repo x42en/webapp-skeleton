@@ -80,7 +80,6 @@ globs.scripts     = [path.join(CONFIG.PATH_CLIENT, "main.{coffee,js,ejs}")]
 globs.js          = [path.join(CONFIG.PATH_CLIENT, "**/*.js")]
 globs.coffee      = [path.join(CONFIG.PATH_CLIENT, "**/*.coffee")]
 
-globs.jade_server = [path.join(CONFIG.PATH_CLIENT, "**/*.{html,jade,pug}"), '!' + path.join(CONFIG.PATH_CLIENT, "**/_*.{html,jade,pug}"), '!' + path.join(CONFIG.PATH_CLIENT, "index.{html,jade,pug}")]
 globs.jade_index  = [path.join(CONFIG.PATH_CLIENT, "index.{html,jade,pug}")]
 globs.jade_client = [path.join(CONFIG.PATH_CLIENT, "**/_*.{html,jade,pug}")]
 
@@ -523,11 +522,9 @@ gulp.task('bundle:libs', function() {
 });
 
 gulp.task('compile:jade_index', ['compile:jade_templates'], function(){
-  var stream =  gulp.src(globs.jade_index)
+  return gulp.src(globs.jade_index)
     .pipe(plumber({ errorHandler: errorHandler }))
-    .pipe(data(function(file){
-      return JSON.parse(fs.readFileSync(CONFIG_FILE));
-    }))
+    .pipe(data(CONFIG))
     .pipe(jade({pretty: !production}).on('error', errorHandler))
     .pipe(rename('index.php'))
     .pipe(gulpif(production, htmlify()))
@@ -553,8 +550,7 @@ gulp.task('compile:client', function() {
     'bundle:libs',
     'compile:styles',
     'compile:scripts',
-    'compile:jade_index',
-    'watch:client'
+    'compile:jade_index'
     ]);
 })
 
@@ -575,7 +571,10 @@ gulp.task('watch:client', ['compile:client'], function(){
   watch(globs.coffee, function(){
     gulp.start('compile:scripts');
   });
-  watch(globs.jade_index.concat(globs.jade_client), function(){
+  watch(globs.jade_index, function(){
+    gulp.start('compile:jade_index');
+  });
+  watch(globs.jade_client, function(){
     gulp.start('compile:jade_index');
   });
 });
@@ -604,15 +603,25 @@ gulp.task('compile:server', ['copy:data'], function(){
 })
 
 // run server 
-gulp.task('start:server', ['watch:server'], function() {
+gulp.task('start:server', ['watch:server','watch:server_data'], function() {
   console.log(blue('[+] Starting server'));
   server.listen( { path: path.join(CONFIG.APP_BUILD_SERVER, 'server.js') } );
 });
 
 // restart server if app.js changed 
 gulp.task('watch:server', ['compile:server'], function() {
-  watch( globs.server.concat(globs.server_data), function(){
+  watch( globs.server, function(){
     gulp.start('compile:server');
+    server.restart();
+    refreshBrowser();
+  });
+});
+
+// restart server if data has changed 
+gulp.task('watch:server_data', function() {
+  watch( globs.server_data, function(){
+    gulp.start('copy:data');
+    // Must restart the server anyway
     server.restart();
     refreshBrowser();
   });
@@ -628,10 +637,14 @@ gulp.task('start:client', ['watch:client'], function() {
 
 // Default task, launch it with '#> gulp'
 gulp.task('default', ['clean'], function() {
-  gulp.start([
-    'start:client',
-    'start:server'
-    ], function () {
+  var TASKS = ['start:client'];
+
+  // If a node server is required
+  if(CONFIG.BACKEND.indexOf('NodeJS') > -1){
+    TASKS.push('start:server');
+  }
+
+  gulp.start(TASKS, function () {
       if(FIRSTIME){  
         console.log(green("[+] Start task finished"));
         console.log(green("[+] Check http://" + CONFIG.APP_URL + "/"));
