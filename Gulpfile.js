@@ -12,6 +12,7 @@ const CONFIG      = require(CONFIG_FILE);
 // Load dependencies
 const gulp     = require('gulp')
 , fs           = require('fs')
+, path         = require('path')
 , mkdirp       = require('mkdirp')
 , gutil        = require('gulp-util')
 , del          = require('del')
@@ -41,7 +42,6 @@ const gulp     = require('gulp')
 , merge        = require('merge-stream')
 , browserify   = require('browserify')
 , watchify     = require('watchify')
-, path         = require('path')
 , glob         = require('glob')
 , pe           = require('pretty-error').start()
 , io           = require('socket.io')(CONFIG.REFRESH_PORT)
@@ -60,7 +60,7 @@ var FIRSTIME   = true
 , ON_ERROR     = true
 , globs        = {}
 , files        = []
-, production   = (process.env.NODE_ENV === 'production')
+, production   = (process.env.NODE_ENV === 'production' || CONFIG.PRODUCTION)
 ;
 
 // production = true;
@@ -475,7 +475,7 @@ gulp.task('compile:scripts', function() {
     paths: [CONFIG.PATH_CLIENT],
     debug: !production,
     transform: ['coffeeify','babelify']
-  });
+  }).on('error', errorHandler);
 
   libs.forEach(function(lib) {
     b.external(lib);
@@ -484,8 +484,11 @@ gulp.task('compile:scripts', function() {
   var stream = b.bundle().pipe(plumber({ errorHandler: errorHandler })).pipe(source(CONFIG.APP_BUNDLE));
 
   return stream.pipe(plumber({ errorHandler: errorHandler }))
+    // .pipe(ngAnnotate())
+    // .pipe(gulpif(production, htmlify({customPrefixes: ['ui-']})))
+    // .pipe(gulpif(production, strip()))
     .pipe(gulpif(production, buffer()))
-    .pipe(gulpif(production, uglify()))
+    .pipe(gulpif(production, uglify({ mangle: false })))
     .pipe(gulp.dest(path.join(CONFIG.APP_BUILD_CLIENT, 'scripts/')))
     .on('end',refreshBrowser);
 })
@@ -515,7 +518,7 @@ gulp.task('bundle:libs', function() {
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(source(CONFIG.LIBS_BUNDLE))
     .pipe(gulpif(production, buffer()))
-    .pipe(gulpif(production, uglify()))
+    .pipe(gulpif(production, uglify({ mangle: false })))
     .pipe(gulp.dest(path.join(CONFIG.APP_BUILD_CLIENT, 'scripts/')))
     .on('end',refreshBrowser);
 
@@ -527,7 +530,6 @@ gulp.task('compile:jade_index', ['compile:jade_templates'], function(){
     .pipe(data(CONFIG))
     .pipe(jade({pretty: !production}).on('error', errorHandler))
     .pipe(rename('index.php'))
-    .pipe(gulpif(production, htmlify()))
     .pipe(gulp.dest(CONFIG.APP_BUILD_CLIENT))
     .on('end',refreshBrowser);
 })
@@ -537,7 +539,6 @@ gulp.task('compile:jade_templates', function(){
     .pipe(plumber({ errorHandler: errorHandler }))
     .pipe(jade({pretty: !production}).on('error', errorHandler))
     .pipe(rename({dirname: '',extname: '.php'}))
-    .pipe(gulpif(production, htmlify()))
     .pipe(gulp.dest(path.join(CONFIG.APP_BUILD_CLIENT, 'pages/')));
 })
 
@@ -572,6 +573,9 @@ gulp.task('watch:client', ['compile:client'], function(){
     gulp.start('compile:scripts');
   });
   watch(globs.jade_index, function(){
+    gulp.start('compile:jade_index');
+  });
+  watch([path.join(CONFIG.PATH_CLIENT,CONFIG_FILE)], function(){
     gulp.start('compile:jade_index');
   });
   watch(globs.jade_client, function(){
