@@ -484,9 +484,6 @@ gulp.task('compile:scripts', function() {
   var stream = b.bundle().pipe(plumber({ errorHandler: errorHandler })).pipe(source(CONFIG.APP_BUNDLE));
 
   return stream.pipe(plumber({ errorHandler: errorHandler }))
-    // .pipe(ngAnnotate())
-    // .pipe(gulpif(production, htmlify({customPrefixes: ['ui-']})))
-    // .pipe(gulpif(production, strip()))
     .pipe(gulpif(production, buffer()))
     .pipe(gulpif(production, uglify({ mangle: false })))
     .pipe(gulp.dest(path.join(CONFIG.APP_BUILD_CLIENT, 'scripts/')))
