@@ -74,6 +74,6 @@
     "angular-ui-router": "^0.4.2",
     "ioserver": "^0.2.0",
     "mongo-sync": "^2.0.1",
-    "socket.io-client": "^1.4.8"
+    "socket.io-client": "^2.0.0"
   }
 }
