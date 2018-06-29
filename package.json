@@ -5,7 +5,9 @@
   "main": "Gulpfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "gulp": "gulp"
+    "gulp": "gulp",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "keywords": [
     "webapp",
@@ -74,6 +76,8 @@
     "angular-ui-router": "^0.4.2",
     "ioserver": "^0.2.0",
     "mongo-sync": "^2.0.1",
-    "socket.io-client": "^2.0.2"
-  }
+    "socket.io-client": "^2.0.2",
+    "snyk": "^1.87.0"
+  },
+  "snyk": true
 }
